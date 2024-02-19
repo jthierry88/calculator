@@ -1,0 +1,288 @@
+﻿<Window
+    x:Class="Calculator.MainWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:converters="clr-namespace:Calculator.Converters"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:Calculator"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:viewModels="clr-namespace:Calculator.ViewModel"
+    Title="Calculator"
+    Width="450"
+    Height="600"
+    MinWidth="400"
+    MinHeight="550"
+    DataContext="{x:Static viewModels:Locator.MainVM}"
+    KeyUp="Window_KeyUp"
+    mc:Ignorable="d">
+    <Window.Resources>
+
+        <converters:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+        <converters:OperationToVisibilityConverter x:Key="OperationToVisibilityConverter" />
+
+        <ControlTemplate x:Key="CalculatorButtonTemplate" TargetType="{x:Type ButtonBase}">
+            <Border
+                x:Name="ButtonBackgroundBorder"
+                Background="#142f44"
+                BorderBrush="#a2bbcf"
+                BorderThickness="2"
+                CornerRadius="12">
+
+                <ContentPresenter />
+            </Border>
+            <ControlTemplate.Triggers>
+                <Trigger Property="IsPressed" Value="True">
+                    <Setter TargetName="ButtonBackgroundBorder" Property="Background" Value="#1d3849" />
+                </Trigger>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter TargetName="ButtonBackgroundBorder" Property="BorderBrush" Value="#FF2C8FBC" />
+                </Trigger>
+
+            </ControlTemplate.Triggers>
+        </ControlTemplate>
+
+        <Style x:Key="CalculatorButtonStyle" TargetType="Button">
+            <Setter Property="Margin" Value="8" />
+            <Setter Property="Template" Value="{DynamicResource CalculatorButtonTemplate}" />
+            <Setter Property="Command" Value="{Binding Source={x:Static viewModels:Locator.MainVM}, Path=CommandButtonPressed}" />
+        </Style>
+
+
+        <Style x:Key="ButtonTextBlockStyle" TargetType="TextBlock">
+            <Setter Property="HorizontalAlignment" Value="Center" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="FontSize" Value="60" />
+            <Setter Property="Foreground" Value="#a2bbcf" />
+        </Style>
+    </Window.Resources>
+    <Grid Background="#FF332F2F">
+
+        <DockPanel>
+
+
+
+            <!--  Output Window  -->
+            <Grid Margin="12" DockPanel.Dock="Top">
+
+
+
+                <Border
+                    Background="#FF6290B5"
+                    BorderBrush="#a2bbcf"
+                    BorderThickness="2"
+                    CornerRadius="6">
+                    <TextBlock
+                        Margin="6"
+                        FontSize="60"
+                        Foreground="#FF2A3C4A"
+                        Text="{Binding OutputText}"
+                        TextAlignment="Right" />
+                </Border>
+
+                <!--  Output While in Operation  -->
+                <TextBlock
+                    Margin="0,2,6,0"
+                    HorizontalAlignment="Right"
+                    VerticalAlignment="Top"
+                    FontSize="14"
+                    Foreground="#FF2A3C4A"
+                    Text="{Binding OutputText2}"
+                    Visibility="{Binding InOperation, Converter={StaticResource BooleanToVisibilityConverter}}" />
+
+            </Grid>
+
+            <!--  Clear Button  -->
+            <Button
+                CommandParameter="Clear"
+                DockPanel.Dock="Top"
+                KeyboardNavigation.AcceptsReturn="False"
+                Style="{DynamicResource CalculatorButtonStyle}">
+                <TextBlock
+                    FontSize="45"
+                    Style="{DynamicResource ButtonTextBlockStyle}"
+                    Text="CLEAR" />
+            </Button>
+
+            <!--  Calculator Buttons  -->
+            <Grid DockPanel.Dock="Top">
+                <Grid.Resources>
+                    <Style BasedOn="{StaticResource CalculatorButtonStyle}" TargetType="Button" />
+
+                    <Style BasedOn="{StaticResource ButtonTextBlockStyle}" TargetType="TextBlock" />
+
+
+                </Grid.Resources>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition />
+                    <ColumnDefinition />
+                    <ColumnDefinition />
+                    <ColumnDefinition />
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition />
+                    <RowDefinition />
+                    <RowDefinition />
+                    <RowDefinition />
+                </Grid.RowDefinitions>
+
+                <!--  Buttons 7, 8, 9, \  -->
+                <Button
+                    Grid.Row="0"
+                    Grid.Column="0"
+                    CommandParameter="7"
+                    KeyboardNavigation.AcceptsReturn="False">
+                    <TextBlock Text="7" />
+                </Button>
+                <Button
+                    Grid.Row="0"
+                    Grid.Column="1"
+                    CommandParameter="8"
+                    KeyboardNavigation.AcceptsReturn="False">
+                    <TextBlock Text="8" />
+                </Button>
+                <Button
+                    Grid.Row="0"
+                    Grid.Column="2"
+                    CommandParameter="9"
+                    KeyboardNavigation.AcceptsReturn="False">
+                    <TextBlock Text="9" />
+                </Button>
+
+                <Grid Grid.Row="0" Grid.Column="3">
+                    <Border
+                        Margin="5"
+                        Background="#a2bbcf"
+                        CornerRadius="16"
+                        Visibility="{Binding CurrentOperation, Converter={StaticResource OperationToVisibilityConverter}, ConverterParameter={x:Static viewModels:Operation.Divide}}" />
+                    <Button
+                        Grid.Row="0"
+                        Grid.Column="3"
+                        CommandParameter="Divide"
+                        KeyboardNavigation.AcceptsReturn="False">
+                        <TextBlock Text="\" />
+                    </Button>
+                </Grid>
+
+                <!--  Buttons 4, 5, 6, X  -->
+                <Button
+                    Grid.Row="1"
+                    Grid.Column="0"
+                    CommandParameter="4"
+                    KeyboardNavigation.AcceptsReturn="False">
+                    <TextBlock Text="4" />
+                </Button>
+                <Button
+                    Grid.Row="1"
+                    Grid.Column="1"
+                    CommandParameter="5"
+                    KeyboardNavigation.AcceptsReturn="False">
+                    <TextBlock Text="5" />
+                </Button>
+                <Button
+                    Grid.Row="1"
+                    Grid.Column="2"
+                    CommandParameter="6"
+                    KeyboardNavigation.AcceptsReturn="False">
+                    <TextBlock Text="6" />
+                </Button>
+
+                <Grid Grid.Row="1" Grid.Column="3">
+                    <Border
+                        Margin="5"
+                        Background="#a2bbcf"
+                        CornerRadius="16"
+                        Visibility="{Binding CurrentOperation, Converter={StaticResource OperationToVisibilityConverter}, ConverterParameter={x:Static viewModels:Operation.Multiply}}" />
+                    <Button
+                        Grid.Row="1"
+                        Grid.Column="3"
+                        CommandParameter="Multiply"
+                        KeyboardNavigation.AcceptsReturn="False">
+                        <TextBlock Text="X" />
+                    </Button>
+                </Grid>
+
+                <!--  Buttons 1, 2, 3, -  -->
+                <Button
+                    Grid.Row="2"
+                    Grid.Column="0"
+                    CommandParameter="1"
+                    KeyboardNavigation.AcceptsReturn="False">
+                    <TextBlock Text="1" />
+                </Button>
+                <Button
+                    Grid.Row="2"
+                    Grid.Column="1"
+                    CommandParameter="2"
+                    KeyboardNavigation.AcceptsReturn="False">
+                    <TextBlock Text="2" />
+                </Button>
+                <Button
+                    Grid.Row="2"
+                    Grid.Column="2"
+                    CommandParameter="3"
+                    KeyboardNavigation.AcceptsReturn="False">
+                    <TextBlock Text="3" />
+                </Button>
+
+                <Grid Grid.Row="2" Grid.Column="3">
+                    <Border
+                        Margin="5"
+                        Background="#a2bbcf"
+                        CornerRadius="16"
+                        Visibility="{Binding CurrentOperation, Converter={StaticResource OperationToVisibilityConverter}, ConverterParameter={x:Static viewModels:Operation.Subtract}}" />
+                    <Button
+                        Grid.Row="2"
+                        Grid.Column="3"
+                        CommandParameter="Subtract"
+                        KeyboardNavigation.AcceptsReturn="False">
+                        <TextBlock Text="-" />
+                    </Button>
+                </Grid>
+
+                <!--  Buttons 0, ., +, =  -->
+                <Button
+                    Grid.Row="3"
+                    Grid.Column="0"
+                    CommandParameter="0"
+                    KeyboardNavigation.AcceptsReturn="False">
+                    <TextBlock Text="0" />
+                </Button>
+                <Button
+                    Grid.Row="3"
+                    Grid.Column="1"
+                    CommandParameter="."
+                    KeyboardNavigation.AcceptsReturn="False">
+                    <TextBlock Text="." />
+                </Button>
+
+                <Grid Grid.Row="3" Grid.Column="2">
+                    <Border
+                        Margin="5"
+                        Background="#a2bbcf"
+                        CornerRadius="16"
+                        Visibility="{Binding CurrentOperation, Converter={StaticResource OperationToVisibilityConverter}, ConverterParameter={x:Static viewModels:Operation.Add}}" />
+                    <Button
+                        Grid.Row="3"
+                        Grid.Column="2"
+                        CommandParameter="Add"
+                        KeyboardNavigation.AcceptsReturn="False">
+                        <TextBlock Text="+" />
+                    </Button>
+                </Grid>
+
+                <Button
+                    Grid.Row="3"
+                    Grid.Column="3"
+                    CommandParameter="Equals"
+                    KeyboardNavigation.AcceptsReturn="False">
+                    <TextBlock Text="=" />
+                </Button>
+
+            </Grid>
+
+        </DockPanel>
+
+    </Grid>
+
+
+</Window>
